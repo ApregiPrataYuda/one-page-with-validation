@@ -1,0 +1,48 @@
+ 
+ 
+ //for controllers
+ public function proses()
+  {
+    $this->form_validation->set_rules('name', 'name', 'required');
+    $this->form_validation->set_rules('kode', 'kode', 'required');
+    $this->form_validation->set_rules('description', 'description', 'required');
+    $this->form_validation->set_message('required', '{field}  masih kosong, silakan di isi dulu?');
+
+    $this->form_validation->set_error_delimiters('<span class="help-block">', '</span>');
+
+    //jika inputan bernilai benar
+    if ($this->form_validation->run() == TRUE) {
+      $post =  $this->input->post(null,  TRUE);
+      if (isset($_POST['add'])) {
+        $this->Category_m->add($post);
+      } else if (isset($_POST['edit'])) {
+        $this->Category_m->edit($post);
+      }
+      if ($this->db->affected_rows() > 0) {
+        $this->session->set_flashdata('pesan', 'data berhasil di simpan!');
+      }
+      redirect('Category');
+
+      //jika inputan bernilai salah/kosong dsb
+    } else {
+      $Category = new stdClass();
+      $Category->kategori_id = null;
+      $Category->name = null;
+      $Category->kode = null;
+      $Category->description = null;
+      $data = array(
+        'page' => 'add',
+        'row'  =>  $Category
+      );
+      $this->template->load('Template', 'Category/Category_form', $data);
+    }
+  }
+
+
+//for views
+ <div class="form-group  <?= form_error('name') ? 'has-error' : null ?>">
+              <label for="name">Nama Kategori</label>
+              <input type="hidden" name="id" value="<?= $row->kategori_id ?>">
+              <input type="text" name="name" value="<?= $row->name ?>" id="name" class="form-control" placeholder="Nama Kategori ...">
+              <small class="text-danger" style="font-style: italic "><span class="badge badge-danger"><?= form_error('name') ?></span></small>
+            </div>
